@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<!-- Mendefinisikan dokumen sebagai HTML5 agar dapat dibaca oleh browser. -->
+<html lang="id">
+<head>
+    <!-- Menentukan pengodean karakter UTF-8 agar teks ditampilkan dengan benar. -->
+    <meta charset="UTF-8">
+
+    <!-- Mengatur lebar halaman agar menyesuaikan ukuran layar perangkat. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Menentukan judul halaman yang muncul pada tab browser. -->
+    <title>Kalkulator Rasyid</title>
+
+    <style>
+        /* Mengatur tampilan dasar halaman kalkulator. */
+        body {
+            font-family: Arial, sans-serif; /* Menggunakan jenis huruf Arial. */
+            background: #eee; /* Memberikan warna abu-abu pada latar halaman. */
+            display: flex; /* Mengaktifkan Flexbox untuk mengatur posisi elemen. */
+            justify-content: center; /* Memusatkan kalkulator secara horizontal. */
+            align-items: center; /* Memusatkan kalkulator secara vertikal. */
+            min-height: 100vh; /* Membuat tinggi minimal halaman sebesar layar. */
+            margin: 0; /* Menghilangkan jarak bawaan pada tepi halaman. */
+        }
+
+        /* Mengatur wadah utama yang berisi seluruh komponen kalkulator. */
+        .calculator {
+            background: #222; /* Memberikan latar berwarna gelap. */
+            padding: 20px; /* Memberikan jarak antara isi dan tepi wadah. */
+            border-radius: 20px; /* Membuat sudut wadah menjadi membulat. */
+            width: 280px; /* Menentukan lebar wadah kalkulator. */
+        }
+
+        /* Mengatur tampilan judul kalkulator. */
+        h2 {
+            color: white; /* Mengubah warna judul menjadi putih. */
+            text-align: center; /* Memusatkan posisi judul. */
+        }
+
+        /* Mengatur area yang menampilkan angka dan ekspresi matematika. */
+        #display {
+            background: #333; /* Memberikan latar gelap pada layar kalkulator. */
+            color: white; /* Membuat angka terlihat berwarna putih. */
+            font-size: 30px; /* Memperbesar ukuran angka yang ditampilkan. */
+            text-align: right; /* Menempatkan angka di sisi kanan layar. */
+            padding: 15px; /* Memberikan ruang di dalam area tampilan. */
+            border-radius: 10px; /* Membuat sudut layar membulat. */
+            margin-bottom: 5px; /* Memberikan jarak dengan area hasil. */
+            min-height: 40px; /* Menentukan tinggi minimal area tampilan. */
+            overflow-wrap: anywhere; /* Memungkinkan teks panjang berpindah baris. */
+        }
+
+        /* Mengatur area untuk menampilkan hasil perhitungan sementara. */
+        #hasil {
+            color: #aaa; /* Menggunakan warna abu-abu terang pada hasil. */
+            text-align: right; /* Menempatkan hasil di sisi kanan. */
+            font-size: 18px; /* Menentukan ukuran teks hasil. */
+            min-height: 25px; /* Menentukan tinggi minimal area hasil. */
+            margin-bottom: 15px; /* Memberikan jarak antara hasil dan tombol. */
+        }
+
+        /* Menyusun tombol kalkulator menggunakan CSS Grid. */
+        .buttons {
+            display: grid; /* Mengaktifkan sistem tata letak Grid. */
+            grid-template-columns: repeat(4, 1fr); /* Membuat empat kolom dengan lebar sama. */
+            gap: 8px; /* Memberikan jarak antartombol. */
+        }
+
+        /* Mengatur tampilan umum seluruh tombol kalkulator. */
+        button {
+            padding: 18px 5px; /* Mengatur ruang di dalam tombol. */
+            border: none; /* Menghilangkan garis tepi tombol. */
+            border-radius: 10px; /* Membuat sudut tombol membulat. */
+            font-size: 20px; /* Mengatur ukuran teks tombol. */
+            background: #555; /* Memberikan latar abu-abu gelap. */
+            color: white; /* Membuat teks tombol berwarna putih. */
+            cursor: pointer; /* Mengubah kursor menjadi penunjuk saat diarahkan ke tombol. */
+        }
+
+        /* Mengubah warna tombol ketika kursor diarahkan ke atasnya. */
+        button:hover {
+            background: #777; /* Membuat tombol terlihat lebih terang saat diarahkan. */
+        }
+
+        /* Memberikan warna khusus pada tombol operasi matematika. */
+        .operator {
+            background: #ff9500; /* Menggunakan warna oranye untuk tombol operator. */
+        }
+
+        /* Memberikan warna khusus pada tombol untuk menghapus seluruh input. */
+        .clear {
+            background: #c44; /* Menggunakan warna merah untuk tombol AC. */
+        }
+
+        /* Membuat tombol angka nol menempati dua kolom pada Grid. */
+        .zero {
+            grid-column: span 2; /* Memperlebar tombol nol sebanyak dua kolom. */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Menjadi wadah utama yang mengelompokkan seluruh komponen kalkulator. -->
+    <div class="calculator">
+
+        <!-- Menampilkan nama aplikasi pada bagian atas kalkulator. -->
+        <h2>Kalkulator Rasyid</h2>
+
+        <!-- Menampilkan angka atau ekspresi yang sedang dimasukkan pengguna. -->
+        <div id="display">0</div>
+
+        <!-- Menampilkan hasil sementara sebelum atau sesudah perhitungan. -->
+        <div id="hasil">Hasil: —</div>
+
+        <!-- Mengelompokkan tombol agar tersusun sesuai tata letak CSS Grid. -->
+        <div class="buttons">
+
+            <!-- Memanggil hapusSemua() untuk mengosongkan seluruh perhitungan. -->
+            <button class="clear" onclick="hapusSemua()">AC</button>
+
+            <!-- Memanggil hapusSatu() untuk menghapus karakter terakhir. -->
+            <button onclick="hapusSatu()">DEL</button>
+
+            <!-- Memanggil tambah('%') untuk memasukkan simbol persentase. -->
+            <button class="operator" onclick="tambah('%')">%</button>
+
+            <!-- Memasukkan operator pembagian ke dalam ekspresi. -->
+            <button class="operator" onclick="tambah('/')">÷</button>
+
+            <!-- Memasukkan angka sesuai tombol yang ditekan pengguna. -->
+            <button onclick="tambah('7')">7</button>
+            <button onclick="tambah('8')">8</button>
+            <button onclick="tambah('9')">9</button>
+
+            <!-- Memasukkan operator perkalian ke dalam ekspresi. -->
+            <button class="operator" onclick="tambah('*')">×</button>
+
+            <!-- Memasukkan angka sesuai tombol yang ditekan pengguna. -->
+            <button onclick="tambah('4')">4</button>
+            <button onclick="tambah('5')">5</button>
+            <button onclick="tambah('6')">6</button>
+
+            <!-- Memasukkan operator pengurangan ke dalam ekspresi. -->
+            <button class="operator" onclick="tambah('-')">−</button>
+
+            <!-- Memasukkan angka sesuai tombol yang ditekan pengguna. -->
+            <button onclick="tambah('1')">1</button>
+            <button onclick="tambah('2')">2</button>
+            <button onclick="tambah('3')">3</button>
+
+            <!-- Memasukkan operator penjumlahan ke dalam ekspresi. -->
+            <button class="operator" onclick="tambah('+')">+</button>
+
+            <!-- Memasukkan angka nol dengan ukuran tombol yang lebih lebar. -->
+            <button class="zero" onclick="tambah('0')">0</button>
+
+            <!-- Memasukkan tanda desimal untuk bilangan pecahan. -->
+            <button onclick="tambah('.')">.</button>
+
+            <!-- Memanggil fungsi hitung() untuk memperoleh hasil akhir. -->
+            <button class="operator" onclick="hitung()">=</button>
+
+        </div>
+    </div>
+
+    <script>
+        // Menyimpan ekspresi yang dimasukkan pengguna dan status perhitungan.
+        // Variabel input menyimpan angka serta operator dalam bentuk teks.
+        // Variabel selesai menandai apakah perhitungan telah selesai.
+        let input = "", selesai = false;
+
+        // Mengambil elemen layar dan area hasil berdasarkan atribut id.
+        // Kedua elemen ini digunakan untuk memperbarui tampilan melalui JavaScript.
+        const display = document.getElementById("display");
+        const hasil = document.getElementById("hasil");
+
+        // Mengolah ekspresi matematika yang diterima dalam bentuk teks.
+        // Fungsi ini memisahkan angka dan operator, lalu menghitung nilainya.
+        function hitungEkspresi(teks) {
+
+            // Memisahkan teks menjadi token berupa angka atau operator.
+            // Contohnya, ekspresi "10+5" dipisahkan menjadi 10, +, dan 5.
+            let token = teks.match(/\d+\.?\d*|[+\-*/%]/g);
+
+            // Memeriksa apakah ekspresi kosong atau mengandung karakter tidak valid.
+            // Jika tidak sesuai, program menghentikan proses dengan pesan kesalahan.
+            if (!token || token.join("") !== teks)
+                throw Error("Input tidak valid");
+
+            // Menyimpan posisi token yang sedang dibaca.
+            // Nilai posisi bertambah ketika suatu token telah diproses.
+            let posisi = 0;
+
+            // Membaca nilai angka, tanda positif atau negatif, dan persentase.
+            function angka() {
+                // Menetapkan tanda awal bilangan sebagai positif.
+                let tanda = 1;
+
+                // Membaca tanda positif atau negatif sebelum angka.
+                // Setiap tanda minus membalik tanda bilangan.
+                while (token[posisi] === "+" ||
+                       token[posisi] === "-") {
+                    if (token[posisi++] === "-") tanda *= -1;
+                }
+
+                let nilai;
+
+                // Memastikan token berikutnya merupakan angka yang dapat dibaca.
+                // Operator atau token kosong pada posisi angka dianggap tidak valid.
+                if (token[posisi] === undefined ||
+                    "+-*/%".includes(token[posisi])) {
+                    throw Error("Angka tidak valid");
+                }
+
+                // Mengubah teks angka menjadi tipe numerik.
+                // Tanda positif atau negatif diterapkan pada nilai tersebut.
+                nilai = Number(token[posisi++]) * tanda;
+
+                // Memastikan nilai yang diperoleh merupakan angka yang valid.
+                if (!Number.isFinite(nilai))
+                    throw Error("Angka tidak valid");
+
+                // Menandai apakah angka diikuti oleh simbol persentase.
+                let persen = false;
+
+                if (token[posisi] === "%") {
+                    posisi++; // Berpindah ke token berikutnya.
+                    persen = true; // Menandai bahwa angka menggunakan persentase.
+                }
+
+                // Mengembalikan angka dan informasi persentasenya.
+                return { nilai, persen };
+            }
+
+            // Menghitung operasi perkalian dan pembagian.
+            // Fungsi ini diproses sebelum penjumlahan dan pengurangan.
+            function perkalian() {
+                // Membaca angka pertama sebagai nilai awal perhitungan.
+                let kiri = angka();
+
+                // Melanjutkan perhitungan selama terdapat operator * atau /.
+                while (token[posisi] === "*" ||
+                       token[posisi] === "/") {
+                    let op = token[posisi++]; // Mengambil operator.
+                    let kanan = angka(); // Membaca angka berikutnya.
+
+                    // Menghitung nilai berdasarkan operator yang digunakan.
+                    // Jika operator berupa *, kedua angka dikalikan.
+                    // Jika operator berupa /, angka kiri dibagi angka kanan.
+                    kiri = {
+                        nilai: op === "*"
+                            ? kiri.nilai * kanan.nilai / (kanan.persen ? 1 : 1)
+                            : kiri.nilai / kanan.nilai,
+                        persen: false
+                    };
+                }
+
+                // Mengembalikan hasil perkalian atau pembagian.
+                return kiri;
+            }
+
+            // Menghitung operasi penjumlahan dan pengurangan.
+            // Fungsi ini memanggil perkalian() agar urutan operasi tetap diterapkan.
+            function penjumlahan() {
+                let kiri = perkalian();
+
+                // Melanjutkan perhitungan selama terdapat operator + atau -.
+                while (token[posisi] === "+" ||
+                       token[posisi] === "-") {
+                    let op = token[posisi++]; // Mengambil operator.
+                    let kanan = perkalian(); // Menghitung bagian ekspresi berikutnya.
+
+                    // Mengubah persentase menjadi nilai relatif terhadap angka kiri.
+                    // Contohnya, 200 + 10% berarti 200 + 20.
+                    if (kanan.persen) {
+                        kanan.nilai = kiri.nilai * kanan.nilai / 100;
+                    }
+
+                    // Menjumlahkan atau mengurangi kedua nilai sesuai operator.
+                    kiri = {
+                        nilai: op === "+"
+                            ? kiri.nilai + kanan.nilai
+                            : kiri.nilai - kanan.nilai,
+                        persen: false
+                    };
+                }
+
+                // Mengembalikan hasil penjumlahan atau pengurangan.
+                return kiri;
+            }
+
+            // Memulai proses perhitungan berdasarkan fungsi penjumlahan().
+            // Fungsi tersebut juga memproses operasi perkalian dan pembagian.
+            let nilai = penjumlahan();
+
+            // Memastikan seluruh token telah diproses dan hasilnya berupa angka valid.
+            if (posisi !== token.length ||
+                !Number.isFinite(nilai.nilai)) {
+                throw Error("Ekspresi tidak valid");
+            }
+
+            // Mengembalikan nilai akhir agar dapat digunakan oleh fungsi lain.
+            return nilai.nilai;
+        }
+
+        // Menampilkan hasil perhitungan sementara saat input berubah.
+        function tampilkanHasil() {
+            try {
+                // Memastikan terdapat ekspresi yang akan dihitung.
+                if (!input) throw Error();
+
+                // Menghitung ekspresi dan menyimpan hasilnya dalam variabel nilai.
+                let nilai = hitungEkspresi(input);
+
+                // Membatasi presisi angka hingga 12 digit signifikan.
+                // Hasil kemudian ditampilkan pada elemen dengan id hasil.
+                hasil.textContent =
+                    "Hasil: " + Number(nilai.toPrecision(12));
+
+            } catch {
+                // Menampilkan tanda garis jika ekspresi belum dapat dihitung.
+                hasil.textContent = "Hasil: —";
+            }
+        }
+
+        // Menambahkan angka atau operator ke dalam ekspresi kalkulator.
+        function tambah(nilai) {
+
+            // Memeriksa apakah perhitungan sebelumnya telah selesai.
+            if (selesai) {
+                if ("+-*/".includes(nilai)) {
+                    // Jika operator ditekan, hasil sebelumnya dapat dilanjutkan.
+                    selesai = false;
+                } else {
+                    // Jika angka atau karakter lain ditekan, mulai perhitungan baru.
+                    input = "";
+                    selesai = false;
+                }
+            }
+
+            // Mengambil karakter terakhir untuk memeriksa input berikutnya.
+            let terakhir = input.slice(-1);
+
+            // Memeriksa apakah nilai yang dimasukkan merupakan operator matematika.
+            if ("+-*/".includes(nilai)) {
+
+                // Mencegah operator perkalian atau pembagian dimasukkan saat input kosong.
+                // Tanda positif dan negatif tetap diperbolehkan pada awal ekspresi.
+                if (!input && nilai !== "-" && nilai !== "+")
+                    return;
+
+                // Memeriksa apakah karakter terakhir merupakan operator.
+                if ("+-*/".includes(terakhir)) {
+
+                    // Mengizinkan tanda minus untuk membentuk bilangan negatif.
+                    if (nilai === "-" && terakhir !== "-") {
+                        input += nilai;
+
+                    // Mengganti operator sebelumnya jika operator baru dimasukkan.
+                    } else if (
+                        (terakhir === "+" || terakhir === "-") &&
+                        input.length >= 2 &&
+                        "+-*/".includes(input.slice(-2, -1))
+                    ) {
+                        input = input.slice(0, -1) + nilai;
+
+                    } else {
+                        // Mengganti operator terakhir agar tidak terjadi operator berurutan.
+                        input = input.slice(0, -1) + nilai;
+                    }
+
+                } else {
+                    // Menambahkan operator setelah angka atau bagian ekspresi yang valid.
+                    input += nilai;
+                }
+
+            } else if (nilai === "%") {
+
+                // Simbol persentase hanya dapat ditambahkan setelah angka.
+                if (!/\d$/.test(input)) return;
+
+                // Menambahkan simbol persentase ke dalam ekspresi.
+                input += nilai;
+
+            } else if (nilai === ".") {
+
+                // Mengambil bagian angka yang sedang dimasukkan.
+                // Pemisahan dilakukan berdasarkan operator matematika.
+                let bagian = input.split(/[+\-*/]/).pop();
+
+                // Mencegah penggunaan lebih dari satu titik desimal pada angka yang sama.
+                // Titik desimal juga tidak ditambahkan setelah simbol persentase.
+                if (bagian.includes(".") || bagian.endsWith("%"))
+                    return;
+
+                // Menambahkan tanda desimal ke dalam ekspresi.
+                input += nilai;
+
+            } else {
+                // Menambahkan angka ke dalam ekspresi yang sedang disusun.
+                input += nilai;
+            }
+
+            // Memperbarui layar utama sesuai ekspresi terbaru.
+            // Jika input kosong, layar tetap menampilkan angka nol.
+            display.textContent = input || "0";
+
+            // Memperbarui hasil sementara setelah input berubah.
+            tampilkanHasil();
+        }
+
+        // Menghapus seluruh input dan mengembalikan kalkulator ke kondisi awal.
+        function hapusSemua() {
+            input = ""; // Mengosongkan ekspresi.
+            selesai = false; // Mengatur status perhitungan menjadi belum selesai.
+            display.textContent = "0"; // Mengembalikan layar utama ke angka nol.
+            hasil.textContent = "Hasil: —"; // Mengosongkan tampilan hasil.
+        }
+
+        // Menghapus satu karakter terakhir dari ekspresi.
+        function hapusSatu() {
+            input = input.slice(0, -1); // Mengambil teks tanpa karakter terakhir.
+            selesai = false; // Mengizinkan pengguna melanjutkan input.
+
+            // Memperbarui layar utama berdasarkan sisa ekspresi.
+            display.textContent = input || "0";
+
+            // Memperbarui hasil sementara setelah karakter dihapus.
+            tampilkanHasil();
+        }
+
+        // Menghitung dan menampilkan hasil akhir ketika tombol sama dengan ditekan.
+        function hitung() {
+            try {
+                // Menghentikan fungsi jika belum ada ekspresi yang dimasukkan.
+                if (!input) return;
+
+                // Menghitung ekspresi menggunakan fungsi hitungEkspresi().
+                let nilai = hitungEkspresi(input);
+
+                // Mengubah hasil menjadi teks agar dapat disimpan sebagai input baru.
+                // Presisi dibatasi untuk mengurangi tampilan angka desimal yang berlebihan.
+                input = String(Number(nilai.toPrecision(12)));
+
+                // Menampilkan hasil akhir pada layar utama dan area hasil.
+                display.textContent = input;
+                hasil.textContent = "Hasil: " + input;
+
+                // Menandai bahwa proses perhitungan telah selesai.
+                selesai = true;
+
+            } catch {
+                // Menampilkan pesan Error apabila ekspresi tidak dapat dihitung.
+                display.textContent = "Error";
+
+                // Mengembalikan area hasil ke tampilan awal.
+                hasil.textContent = "Hasil: —";
+
+                // Mengosongkan input agar perhitungan baru dapat dilakukan.
+                input = "";
+
+                // Menandai bahwa proses sebelumnya telah berakhir.
+                selesai = true;
+            }
+        }
+    </script>
+</body>
+</html>
